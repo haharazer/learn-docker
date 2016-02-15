@@ -5,7 +5,8 @@ nginx:
     links:
       - "php"
     volumes:
-      - /home/han/opt:/opt
+      - ./docker_log:/logs
+      - ./docker_data/www:/var/www
     container_name: nginx
 
 php:
@@ -17,7 +18,8 @@ php:
       - "redis"
       - "elasticsearch"
     volumes:
-      - /home/han/opt:/opt
+      - ./docker_log:/logs
+      - ./docker_data/www:/var/www
     container_name: php
 
 mysql:
@@ -25,7 +27,7 @@ mysql:
     ports:
       - "3306:3306"
     volumes:
-      - /home/han/opt/data/mysql:/var/lib/mysql
+      - ./docker_data/mysql:/var/lib/mysql
     environment:
       MYSQL_ROOT_PASSWORD: 123456
     container_name: mysql
@@ -54,11 +56,12 @@ phpmyadmin:
         - "8080:8080"
     links:
         - "mysql"
-smzdm_crawler:
-    build: ./smzdm_crawler
-    volumes:
-      - /home/han/opt/python:/usr/src/app
-    links:
-      - "mysql"
-    container_name: smcrawler
+
+#smzdm_crawler:
+#    build: ./smzdm_crawler
+#    volumes:
+#      - ./docker_data/python:/usr/src/app
+#    links:
+#      - "mysql"
+#    container_name: smcrawler
 

@@ -25,7 +25,7 @@ RUN chmod 755 /usr/local/bin/composer
 #composer mirror
 RUN composer config -g repo.packagist composer http://packagist.phpcomposer.com
 
-WORKDIR /opt
+WORKDIR /var/www
 RUN usermod -u 1000 www-data
 
-VOLUME ["/opt"]
+VOLUME ["/var/www"]
