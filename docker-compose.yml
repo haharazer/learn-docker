@@ -19,7 +19,7 @@ php:
       - "elasticsearch"
     volumes:
       - ./docker_log:/logs
-      - ./docker_data/www:/var/www
+        #      - ./docker_data/www/laravel:/var/www/laravel
     container_name: php
 
 mysql:

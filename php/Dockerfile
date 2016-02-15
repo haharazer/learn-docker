@@ -1,8 +1,5 @@
 FROM php:5.6-fpm
 
-ADD php.ini    /usr/local/etc/php/php.ini
-#ADD php-fpm.conf    /usr/local/etc/php-fpm.conf
-
 #change to 163 source
 ADD sources.list /etc/apt/sources.list
 
@@ -22,10 +19,32 @@ RUN apt-get update && apt-get install -y \
 ADD composer.phar /usr/local/bin/composer
 RUN chmod 755 /usr/local/bin/composer
 
+#add php conf
+ADD php.ini    /usr/local/etc/php/php.ini
+#ADD php-fpm.conf    /usr/local/etc/php-fpm.conf
+
 #composer mirror
 RUN composer config -g repo.packagist composer http://packagist.phpcomposer.com
 
-WORKDIR /var/www
 RUN usermod -u 1000 www-data
 
-VOLUME ["/var/www"]
+#build laravel
+RUN composer create-project laravel/laravel /var/php/laravel 5.1
+
+#wordir
+WORKDIR /var/php/laravel
+
+#checkout code
+RUN mkdir -p /tmp && cd /tmp \
+    && git clone https://github.com/haharazer/layifa.git \
+    && cp -r ./layifa/youhui/* /var/php/laravel
+
+#copy conf
+COPY env /var/php/laravel/.env
+
+#install depency
+RUN composer update
+RUN chmod -R 775 /var/php/laravel/storage
+RUN chown -R www-data /var/php/laravel/storage
+
+VOLUME ["/var/php/laravel"]
