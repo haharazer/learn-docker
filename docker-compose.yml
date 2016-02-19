@@ -1,67 +1,83 @@
-nginx:
-    build: ./nginx
-    ports:
-      - "80:80"
-    links:
-      - "php"
-    volumes:
-      - ./docker_log:/logs
-      - ./docker_data/www:/var/www
-    container_name: nginx
+version: '2'
+services:
+    nginx:
+        build: ./nginx
+        ports:
+          - "80:80"
+        links:
+          - "php"
+        volumes:
+          - ./docker_log:/logs
+          - ./docker_data/www:/var/www
+        container_name: nginx
+        volumes_from:
+          - laravel
 
-php:
-    build: ./php
-    ports:
-      - "9000:9000"
-    links:
-      - "mysql"
-      - "redis"
-      - "elasticsearch"
-    volumes:
-      - ./docker_log:/logs
-        #      - ./docker_data/www/laravel:/var/www/laravel
-    container_name: php
+    php:
+        build: ./php
+        ports:
+          - "9000:9000"
+        links:
+          - "mysql"
+          - "redis"
+          - "elasticsearch"
+        volumes:
+          - ./docker_log:/logs
+            #      - ./docker_data/www/laravel:/var/www/laravel
+        container_name: php
+        volumes_from:
+          - laravel
 
-mysql:
-    build: ./mysql
-    ports:
-      - "3306:3306"
-    volumes:
-      - ./docker_data/mysql:/var/lib/mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: 123456
-    container_name: mysql
+    mysql:
+        build: ./mysql
+        ports:
+          - "3306:3306"
+        volumes:
+          - ./docker_data/mysql:/var/lib/mysql
+        environment:
+          MYSQL_ROOT_PASSWORD: 123456
+        container_name: mysql
 
-redis:
-    build: ./redis
-    ports:
-      - "6379:6379"
-    container_name: redis
+    redis:
+        build: ./redis
+        ports:
+          - "6379:6379"
+        container_name: redis
 
-elasticsearch:
-    build: ./elasticsearch
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-    container_name: elasticsearch
-        
-phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: myadmin
-    environment:
-        - PMA_ARBITRARY=1
-        - PMA_HOST=mysql
-    restart: always
-    ports:
-        - "8080:8080"
-    links:
-        - "mysql"
+    elasticsearch:
+        build: ./elasticsearch
+        ports:
+          - "9200:9200"
+          - "9300:9300"
+        container_name: elasticsearch
+            
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: myadmin
+        environment:
+            - PMA_ARBITRARY=1
+            - PMA_HOST=mysql
+        restart: always
+        ports:
+            - "8080:80"
+        links:
+            - "mysql"
 
-#smzdm_crawler:
-#    build: ./smzdm_crawler
-#    volumes:
-#      - ./docker_data/python:/usr/src/app
-#    links:
-#      - "mysql"
-#    container_name: smcrawler
+    laravel:
+        build: ./laravel
+        links:
+          - "mysql"
+        container_name: laravel
+        depends_on:
+          - mysql
+
+    smzdm_crawler:
+        build: ./smzdm_crawler
+    #    volumes:
+    #      - ./docker_data/python:/usr/src/app
+        links:
+          - "mysql"
+        container_name: smcrawler
+        volumes_from:
+          - nginx
 

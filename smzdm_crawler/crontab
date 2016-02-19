@@ -1,1 +1,1 @@
-0,10,20,30,40,50 * * * * cd /usr/src/app/laiyifaspider && scrapy crawl smzdm
+0,10,20,30,40,50 * * * * cd /var/python/spider && scrapy crawl smzdm && mkdir -p /var/www/pics && mv ./pics/* /var/www/pics 
